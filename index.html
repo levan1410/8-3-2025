@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🧠 Tổ Đội Hack Não</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Be+Vietnam+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FFF9ED;
+    --card: #FFFFFF;
+    --accent1: #FF5E5B;
+    --accent2: #FFB84C;
+    --accent3: #00C2A0;
+    --accent4: #5B7FFF;
+    --dark: #1A1A2E;
+    --muted: #7A7A9D;
+    --radius: 20px;
+    --shadow: 0 6px 0px rgba(0,0,0,0.15);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Be Vietnam Pro', sans-serif;
+    background: var(--bg);
+    background-image: radial-gradient(circle at 20% 20%, #FFE0B2 0%, transparent 50%),
+                      radial-gradient(circle at 80% 80%, #C8E6C9 0%, transparent 50%);
+    min-height: 100vh;
+    padding: 16px;
+  }
+
+  /* HEADER */
+  header {
+    text-align: center;
+    padding: 20px 0 10px;
+  }
+  header h1 {
+    font-family: 'Baloo 2', cursive;
+    font-size: clamp(1.6rem, 5vw, 2.5rem);
+    font-weight: 800;
+    color: var(--dark);
+    letter-spacing: -1px;
+  }
+  header h1 span { color: var(--accent1); }
+
+  /* NAV TABS */
+  .tab-bar {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 16px 0;
+  }
+  .tab-btn {
+    font-family: 'Baloo 2', cursive;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px 18px;
+    border-radius: 50px;
+    border: 2px solid var(--dark);
+    background: var(--card);
+    color: var(--dark);
+    cursor: pointer;
+    transition: all 0.15s;
+    box-shadow: var(--shadow);
+  }
+  .tab-btn:hover { transform: translateY(-2px); }
+  .tab-btn.active {
+    background: var(--dark);
+    color: white;
+    transform: translateY(-2px);
+  }
+
+  /* LAYOUT */
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 16px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  @media (max-width: 800px) {
+    .layout { grid-template-columns: 1fr; }
+  }
+
+  /* GAME PANEL */
+  .game-panel {
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 2.5px solid var(--dark);
+    box-shadow: var(--shadow);
+    padding: 28px;
+    display: none;
+  }
+  .game-panel.active { display: block; animation: popIn 0.3s ease; }
+  @keyframes popIn {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .game-panel h2 {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--dark);
+    margin-bottom: 6px;
+  }
+  .game-panel .rule {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 20px;
+    font-style: italic;
+  }
+  .question-box {
+    background: var(--bg);
+    border-radius: 14px;
+    border: 2px dashed #D0D0E0;
+    padding: 20px;
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  .question-box p {
+    font-family: 'Baloo 2', cursive;
+    font-size: clamp(1rem, 3vw, 1.5rem);
+    font-weight: 600;
+    color: var(--dark);
+    line-height: 1.4;
+  }
+
+  /* WORDWALL EMBED */
+  .wordwall-box {
+    border-radius: 14px;
+    overflow: hidden;
+    border: 2px solid var(--dark);
+    margin-bottom: 16px;
+  }
+
+  /* COLOR WORD GAME */
+  #colorWord {
+    font-family: 'Baloo 2', cursive;
+    font-size: clamp(3rem, 10vw, 5rem);
+    font-weight: 900;
+    text-align: center;
+    padding: 20px 0;
+    text-shadow: 3px 3px 0 rgba(0,0,0,0.15);
+    transition: color 0.3s;
+  }
+
+  /* SCRAMBLE */
+  .scramble-text {
+    font-family: 'Baloo 2', cursive;
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    font-weight: 800;
+    color: var(--accent1);
+    letter-spacing: 6px;
+    text-align: center;
+  }
+  .answer-reveal {
+    display: none;
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--accent3);
+    text-align: center;
+    margin-top: 10px;
+    animation: popIn 0.2s ease;
+  }
+
+  /* BUTTONS */
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn {
+    font-family: 'Baloo 2', cursive;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 10px 20px;
+    border-radius: 12px;
+    border: 2px solid var(--dark);
+    cursor: pointer;
+    box-shadow: 3px 3px 0 var(--dark);
+    transition: all 0.1s;
+    flex: 1;
+    min-width: 120px;
+  }
+  .btn:active { transform: translate(3px, 3px); box-shadow: none; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-next { background: var(--accent4); color: white; }
+  .btn-show { background: var(--accent2); color: var(--dark); }
+  .btn-color { background: var(--accent1); color: white; }
+
+  /* SCOREBOARD */
+  .scoreboard {
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 2.5px solid var(--dark);
+    box-shadow: var(--shadow);
+    padding: 20px;
+    position: sticky;
+    top: 16px;
+  }
+  .scoreboard h3 {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--dark);
+    margin-bottom: 14px;
+    text-align: center;
+  }
+
+  .player-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    border: 2px solid #EBEBF5;
+    background: var(--bg);
+    transition: all 0.2s;
+  }
+  .player-row:hover { border-color: var(--accent4); }
+  .player-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+    border: 2px solid var(--dark);
+    font-weight: 700;
+  }
+  .player-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--dark);
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .score-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .score-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    border: 2px solid var(--dark);
+    font-size: 16px;
+    font-weight: 900;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 2px 2px 0 var(--dark);
+    transition: all 0.1s;
+    line-height: 1;
+  }
+  .score-btn:active { transform: translate(2px, 2px); box-shadow: none; }
+  .score-btn.plus { background: var(--accent3); color: white; }
+  .score-btn.minus { background: #f0f0f5; color: var(--dark); }
+  .score-val {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--dark);
+    min-width: 28px;
+    text-align: center;
+  }
+
+  /* TOP BADGE */
+  .player-row.top1 { background: #FFF8E7; border-color: var(--accent2); }
+  .player-row.top1 .player-name::before { content: '👑 '; }
+
+  .reset-btn {
+    width: 100%;
+    margin-top: 12px;
+    background: #f0f0f5;
+    color: var(--muted);
+    border: 2px solid #D0D0E0;
+    border-radius: 10px;
+    padding: 8px;
+    font-family: 'Baloo 2', cursive;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    box-shadow: none;
+  }
+  .reset-btn:hover { background: var(--accent1); color: white; border-color: var(--dark); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🧠 Tổ Đội <span>Hack Não</span> 🧠</h1>
+</header>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="openGame('ww', this)">🎮 Wordwall</button>
+  <button class="tab-btn" onclick="openGame('g1', this)">👅 Cắn Lưỡi</button>
+  <button class="tab-btn" onclick="openGame('g2', this)">🧩 Đoán Chữ</button>
+  <button class="tab-btn" onclick="openGame('g3', this)">👁️ Lú Màu</button>
+</div>
+
+<div class="layout">
+
+  <!-- GAME AREA -->
+  <div>
+
+    <!-- WORDWALL -->
+    <div id="ww" class="game-panel active">
+      <h2>🎮 Wordwall Mini Game</h2>
+      <p class="rule">Chơi trực tiếp bên dưới. Người đúng nhiều nhất ghi điểm!</p>
+      <div class="wordwall-box">
+        <iframe src="https://wordwall.net/vi/embed/44a032721bbd4eab88b0f26fd988e223?themeId=65&templateId=30&fontStackId=0"
+          width="100%" height="380" frameborder="0" allowfullscreen></iframe>
+      </div>
+    </div>
+
+    <!-- GAME 1: Cắn lưỡi -->
+    <div id="g1" class="game-panel">
+      <h2>👅 Đọc Nhanh Kẻo Cắn Vào Lưỡi</h2>
+      <p class="rule">Luật: Đọc to câu dưới đây 3 lần với tốc độ bàn thờ!</p>
+      <div class="question-box">
+        <p id="g1-text">Mặt mập mọc một mụt mụn bọc, hai mụt mụn bọc mọc mặt mập.</p>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-show" onclick="resetG1()">Reset Lượt ↺</button>
+        <button class="btn btn-next" id="btn-next-g1" onclick="nextG1()">Câu Tiếp ⏭️</button>
+      </div>
+    </div>
+
+    <!-- GAME 2: Đoán Chữ -->
+    <div id="g2" class="game-panel">
+      <h2>🧩 Đoán Chữ Trong Sáng</h2>
+      <p id="g2-hint" class="rule">Gợi ý: Buổi nhậu sẽ hoàn hảo hơn nếu có...</p>
+      <div class="question-box" style="flex-direction: column; gap: 12px;">
+        <div class="scramble-text" id="g2-scramble">C / Ó / C / Ố / N / I / L / À</div>
+        <div class="answer-reveal" id="g2-answer">✅ Đáp án: NỒI CÁ LÓC</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-show" onclick="resetG2()">Reset Lượt ↺</button>
+        <button class="btn btn-show" onclick="showG2Answer()">Xem Đáp Án 👀</button>
+        <button class="btn btn-next" id="btn-next-g2" onclick="nextG2()">Câu Tiếp ⏭️</button>
+      </div>
+    </div>
+
+    <!-- GAME 3: Lú màu -->
+    <div id="g3" class="game-panel">
+      <h2>👁️ Đọc Màu - Cấm Đọc Chữ!</h2>
+      <p class="rule">Luật: Nói to MÀU SẮC của chữ, không được đọc nội dung chữ!</p>
+      <div class="question-box">
+        <div id="colorWord">XANH LÁ</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-color" onclick="nextG3()">Đổi Màu ⏭️</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCOREBOARD -->
+  <div>
+    <div class="scoreboard">
+      <h3>🏆 Bảng Điểm</h3>
+      <div id="playerList"></div>
+      <button class="reset-btn" onclick="resetScores()">🔄 Reset điểm</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── PLAYERS & SCORES ──────────────────────────────────────────
+const PLAYERS = [
+  { name: "Anh Khoa",     emoji: "🐼", color: "#FFE0B2" },
+  { name: "Yến Vy",       emoji: "🐯", color: "#C8E6C9" },
+  { name: "Thư Kỳ",       emoji: "🦊", color: "#BBDEFB" },
+  { name: "Ánh Ngọc",     emoji: "🐸", color: "#F8BBD0" },
+  { name: "Vanh",         emoji: "🐧", color: "#E1BEE7" },
+  { name: "Tường Thụy",   emoji: "🐻", color: "#B2EBF2" },
+];
+let scores = [0, 0, 0, 0, 0, 0];
+
+function renderScoreboard() {
+  const list = document.getElementById('playerList');
+  const ranked = scores.map((s, i) => ({ s, i })).sort((a, b) => b.s - a.s);
+  list.innerHTML = ranked.map(({ s, i }, rank) => `
+    <div class="player-row ${rank === 0 && s > 0 ? 'top1' : ''}">
+      <div class="player-avatar" style="background:${PLAYERS[i].color}">${PLAYERS[i].emoji}</div>
+      <div>
+        <div class="player-name">${PLAYERS[i].name}</div>
+      </div>
+      <div class="score-controls">
+        <button class="score-btn minus" onclick="changeScore(${i}, -1)">−</button>
+        <span class="score-val">${s}</span>
+        <button class="score-btn plus" onclick="changeScore(${i}, 1)">+</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function changeScore(idx, delta) {
+  scores[idx] = Math.max(0, scores[idx] + delta);
+  renderScoreboard();
+}
+
+function resetScores() {
+  if (confirm('Reset hết điểm về 0?')) {
+    scores = [0, 0, 0, 0, 0, 0];
+    renderScoreboard();
+  }
+}
+
+// ── TABS ──────────────────────────────────────────────────────
+function openGame(id, btn) {
+  document.querySelectorAll('.game-panel').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── GAME 1: Cắn lưỡi ─────────────────────────────────────────
+const dataG1 = [
+  "Mặt mập mọc một mụt mụn bọc, hai mụt mụn bọc mọc mặt mập.",
+  "Con kiến leo cành kiến, kiến leo cành kiến lại rơi.",
+  "Bầu ơi thương lấy bí cùng, tuy rằng khác giống nhưng chung một giàn.",
+  "Chó cắn áo chủ, chủ chửi chó cắn.",
+  "Trăm tám mươi tám bát canh cua, tám trăm bát canh cua tám mươi.",
+];
+let indexG1 = 0;
+
+function updateNextG1() {
+  document.getElementById('btn-next-g1').disabled = indexG1 >= dataG1.length - 1;
+}
+
+function resetG1() {
+  indexG1 = 0;
+  document.getElementById('g1-text').innerText = dataG1[0];
+  updateNextG1();
+}
+
+function nextG1() {
+  if (indexG1 >= dataG1.length - 1) return;
+  indexG1++;
+  document.getElementById('g1-text').innerText = dataG1[indexG1];
+  updateNextG1();
+}
+
+// ── GAME 2: Đoán Chữ ─────────────────────────────────────────
+const dataG2 = [
+  { hint: "Gợi ý: Buổi nhậu sẽ hoàn hảo hơn nếu có...",    scramble: "C / Ó / C / Ố / N / I / L / À",         ans: "NỒI CÁ LÓC" },
+  { hint: "Gợi ý: Harry Potter rất thích được...",           scramble: "B / Ú / U / C",                          ans: "CÚ BU" },
+  { hint: "Gợi ý: Để thành công cần xác định rõ...",         scramble: "T / U / I / M / Ê / U / C / Ụ",         ans: "MỤC TIÊU" },
+  { hint: "Gợi ý: Chỗ làm việc của phi công...",             scramble: "L / Á / N / G / B / U / Ồ / I",         ans: "BUỒNG LÁI" },
+  { hint: "Gợi ý: Tình yêu đích thực là khi ta biết...",     scramble: "H / C / I / M / T / O",                  ans: "CHO TIM" },
+  { hint: "Gợi ý: Khi về quê ta sẽ cảm nhận được...",        scramble: "H / À / G / N / X / Ó / L / M / Ồ / N", ans: "HỒN XÓM LÀNG" },
+];
+let indexG2 = 0;
+
+function updateNextG2() {
+  document.getElementById('btn-next-g2').disabled = indexG2 >= dataG2.length - 1;
+}
+
+function loadG2(idx) {
+  const d = dataG2[idx];
+  document.getElementById('g2-hint').innerText = d.hint;
+  document.getElementById('g2-scramble').innerText = d.scramble;
+  document.getElementById('g2-answer').innerText = '✅ Đáp án: ' + d.ans;
+  document.getElementById('g2-answer').style.display = 'none';
+  updateNextG2();
+}
+
+function resetG2() {
+  indexG2 = 0;
+  loadG2(0);
+}
+
+function showG2Answer() {
+  document.getElementById('g2-answer').style.display = 'block';
+}
+
+function nextG2() {
+  if (indexG2 >= dataG2.length - 1) return;
+  indexG2++;
+  loadG2(indexG2);
+}
+
+// ── GAME 3: Lú màu ───────────────────────────────────────────
+const dataG3 = [
+  { text: "XANH LÁ",      color: "#E53935" },
+  { text: "VÀNG",          color: "#1565C0" },
+  { text: "ĐEN",           color: "#E91E8C" },
+  { text: "TÍM",           color: "#F9A825" },
+  { text: "ĐỎ",            color: "#2E7D32" },
+  { text: "XANH DƯƠNG",    color: "#4A148C" },
+  { text: "CAM",           color: "#00695C" },
+  { text: "HỒNG",          color: "#F57F17" },
+];
+let indexG3 = 0;
+
+function nextG3() {
+  indexG3 = (indexG3 + 1) % dataG3.length;
+  const el = document.getElementById('colorWord');
+  el.innerText = dataG3[indexG3].text;
+  el.style.color = dataG3[indexG3].color;
+}
+
+// ── INIT ─────────────────────────────────────────────────────
+document.getElementById('colorWord').style.color = dataG3[0].color;
+updateNextG1();
+updateNextG2();
+renderScoreboard();
+</script>
+</body>
+</html>
